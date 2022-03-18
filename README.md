@@ -1,4 +1,4 @@
-###Zadanie domowe 6
+#Zadanie domowe 6
 
 Zakres: JUnit5 - dependencies, maven runner, Hamcrest matcher, Asercje JUnit, Selenium, WebDriverManager, Parametryzacja testów. 
  
