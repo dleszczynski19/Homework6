@@ -1,0 +1,160 @@
+<configuration scan="true">
+
+    <property name="DEV_HOME" value="${user.dir}/log"/>
+    <!--##########  PATTERNS  ##########-->
+    <property name="consoleDefaultPattern"
+              value="%26.26(%d{yyyy-MM-dd HH:mm:ss}) %highlight(%-5level) - %highlight( %msg%n)"/>
+    <property name="consoleDriverPattern"
+              value="%25(%boldGreen(%class{0})) %green(%d{yyyy-MM-dd HH:mm:ss}) %highlight(%-5level - %msg%n)"/>
+    <property name="consoleTestPattern"
+              value="%30(%boldMagenta(%class{0})) %magenta(%d{yyyy-MM-dd HH:mm:ss}) %highlight(%-5level - %msg%n)"/>
+    <property name="passedTestPattern"
+              value="%30(%boldGreen(%class{0})) %green(%d{yyyy-MM-dd HH:mm:ss}) %boldGreen(%marker - %msg%n)"/>
+    <property name="filePattern" value="[%thread] %marker %-5level %logger{35} - %msg%n"/>
+    <!--##########  ADDITIONAL OPTIONS  ##########-->
+    <property name="maxHistory" value="3"/>
+    <property name="totalSizeCap" value="30KB"/>
+    <timestamp key="bySecond" datePattern="yyyyMMdd'T'HHmmss"/>
+    <!--##########  Names  ##########-->
+    <property name="fileName" value="timeBasedLogFile_"/>
+    <property name="jsonName" value="timeBasedJsonLogFile_"/>
+    <property name="errorsName" value="errorsFile_"/>
+    <property name="xmlName" value="timeBasedXMLLogFile_"/>
+    <property name="filePath" value="${DEV_HOME}/log/zip/timeBasedLogFile.%d{yyyy-MM-dd-HH-mm}"/>
+    <property name="jsonPath" value="${DEV_HOME}/json/zip/timeBasedJsonFile.%d{yyyy-MM-dd-HH-mm}"/>
+    <property name="errorsPath" value="${DEV_HOME}/errors/zip/errorsFile.%d{yyyy-MM-dd-HH-mm}"/>
+    <property name="xmlPath" value="${DEV_HOME}/xml/zip/timeBasedXMLFile.%d{yyyy-MM-dd-HH-mm}"/>
+
+    <!--##########  CONSOLE APPENDER  ##########-->
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="com.loggerConfig.MultiLayoutPattern">
+            <pattern>${consoleDefaultPattern}</pattern>
+            <rule>
+                <logger>com.configuration.TestBase</logger>
+                <pattern>${consoleDriverPattern}</pattern>
+            </rule>
+            <rule>
+                <logger>com.test</logger>
+                <pattern>${consoleTestPattern}</pattern>
+            </rule>
+        </encoder>
+        <filter class="com.loggerConfig.MarkerFilter">
+            <marker>PASSED</marker>
+            <onMatch>DENY</onMatch>
+            <onMismatch>ACCEPT</onMismatch>
+        </filter>
+    </appender>
+
+    <!--    MARKER PASSED APPENDER-->
+    <appender name="PASSED" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="com.loggerConfig.MultiLayoutPattern">
+            <pattern>${passedTestPattern}</pattern>
+        </encoder>
+        <filter class="com.loggerConfig.MarkerFilter">
+            <marker>PASSED</marker>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+    </appender>
+
+    <!--##########  LOG FILE APPENDER  ##########-->
+    <appender name="LOG_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${DEV_HOME}/log/${fileName}${bySecond}.log</file>
+        <append>true</append>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${filePath}.zip</fileNamePattern>
+            <maxHistory>${maxHistory}</maxHistory>
+            <totalSizeCap>${totalSizeCap}</totalSizeCap>
+        </rollingPolicy>
+        <encoder>
+            <pattern>${filePattern}</pattern>
+        </encoder>
+    </appender>
+
+    <Logger name="passed" level="info"/>
+    <!--##########  JSON CONSOLE APPENDER  ##########-->
+    <appender name="JSON_CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>ERROR</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+            <timestampPattern>yyyy-MM-dd HH:mm:ss</timestampPattern>
+            <jsonGeneratorDecorator class="com.github.skjolber.decorators.SyntaxHighlightingDecorator"/>
+            <fieldNames>
+                <levelValue>[ignore]</levelValue>
+                <version>[ignore]</version>
+                <timestamp>timestamp</timestamp>
+                <threadName>[ignore]</threadName>
+            </fieldNames>
+        </encoder>
+    </appender>
+
+    <!--##########  JSON FILE APPENDER  ##########-->
+    <appender name="JSON_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${DEV_HOME}/json/${jsonName}${bySecond}.json</file>
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+            <fieldNames>
+                <levelValue>[ignore]</levelValue>
+                <version>[ignore]</version>
+            </fieldNames>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${jsonPath}.%i.zip</fileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>${totalSizeCap}</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+            <maxHistory>${maxHistory}</maxHistory>
+        </rollingPolicy>
+    </appender>
+
+    <!--##########  ERROR FILE APPENDER  ##########-->
+    <appender name="ERRORS_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>ERROR</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <file>${DEV_HOME}/errors/${errorsName}${bySecond}.json</file>
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+            <fieldNames>
+                <levelValue>[ignore]</levelValue>
+                <version>[ignore]</version>
+            </fieldNames>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${errorsPath}.%i.zip</fileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>${totalSizeCap}</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+            <maxHistory>${maxHistory}</maxHistory>
+        </rollingPolicy>
+    </appender>
+
+    <!--##########  XML FILE APPENDER  ##########-->
+    <appender name="XML_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${DEV_HOME}/xml/${xmlName}${bySecond}.xml</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${xmlPath}.%i.zip</fileNamePattern>
+            <maxFileSize>${totalSizeCap}</maxFileSize>
+            <maxHistory>${maxHistory}</maxHistory>
+        </rollingPolicy>
+        <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
+            <charset>UTF-8</charset>
+            <layout class="ch.qos.logback.classic.log4j.XMLLayout">
+                <properties>true</properties>
+            </layout>
+        </encoder>
+    </appender>
+
+    <root level="info">
+        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="LOG_FILE"/>
+        <appender-ref ref="JSON_FILE"/>
+        <appender-ref ref="ERRORS_FILE"/>
+        <appender-ref ref="JSON_CONSOLE"/>
+        <appender-ref ref="XML_FILE"/>
+        <appender-ref ref="PASSED"/>
+    </root>
+</configuration>
