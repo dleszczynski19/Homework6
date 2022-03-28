@@ -1,3 +1,17 @@
+#Zadanie domowe 8
+
+Dodaj loggery do zadania nr. 6.
+Logback zawiera:
+- Appender wyświetlający log na consoli w jsonie dla Errorów -> appender = JSON
+- Appender zapisujący logi w formcie json do pliku .json -> appender = JSON_FILE
+- Appender zapisujący logi w formcie xml do pliku .xml -> appender = XML_FILE
+- Appender zapisujacy logi o levelu ERROR do pliku json -> appender = ERRORS_FILE
+- Logi zapisywane w folderach im odpowiadających
+- Wcięcia do logów w konsoli dla poprawienia ich widoczności (zamysłem jest stworzenie "drzewka" - DRIVER - TEST - METHOD, które będzie łatwe do odczytania)
+- Zmiana patternu wyswietlanie w konsoli dla poszczegolnych klas/package (Klasa MultiLayoutPattern)
+- Dodanie markera passed jeżeli test przeszedł (Klasa Marker Filter)
+- Test do sprawdzania działania poszczególnych leveli loggerów i markera (LoggerTest)
+
 #Zadanie domowe 6
 
 Zakres: JUnit5 - dependencies, maven runner, Hamcrest matcher, Asercje JUnit, Selenium, WebDriverManager, Parametryzacja testów. 
